@@ -1,13 +1,12 @@
 https://github.com/CoreELEC/CoreELEC/pull/208
-fix si2168 tunning timeout
+fix si2168 cmd timeout
 
 Some demodulator si2168 commands may take 130-140 ms
 (DVB-T/T2 tuner MyGica T230C v2).
 
-
 --- a/drivers/media/dvb-frontends/si2168.c
 +++ b/drivers/media/dvb-frontends/si2168.c
-@@ -42,7 +42,7 @@ static int si2168_cmd_execute(struct i2c
+@@ -76,7 +76,7 @@
  
  	if (cmd->rlen) {
  		/* wait cmd execution terminate */
@@ -15,4 +14,4 @@ Some demodulator si2168 commands may take 130-140 ms
 +		#define TIMEOUT 200
  		timeout = jiffies + msecs_to_jiffies(TIMEOUT);
  		while (!time_after(jiffies, timeout)) {
- 			ret = i2c_master_recv(client, cmd->args, cmd->rlen);
+ 			ret = si2168_i2c_master_recv_unlocked(client, cmd->args,
