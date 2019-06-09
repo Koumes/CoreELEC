@@ -1,0 +1,118 @@
+fix dvbsky frontend detach
+Original source: https://git.linuxtv.org/media_tree.git/commit/drivers/media/usb/dvb-usb-v2/dvbsky.c?id=fdfa59cd63b184e1e96d51ff170fcac739bc6f6f
+
+--- a/drivers/media/usb/dvb-usb-v2/dvbsky.c
++++ b/drivers/media/usb/dvb-usb-v2/dvbsky.c
+@@ -686,16 +686,18 @@ static int dvbsky_init(struct dvb_usb_device *d)
+ 	return 0;
+ }
+ 
+-static void dvbsky_exit(struct dvb_usb_device *d)
++static int dvbsky_frontend_detach(struct dvb_usb_adapter *adap)
+ {
++	struct dvb_usb_device *d = adap_to_d(adap);
+ 	struct dvbsky_state *state = d_to_priv(d);
+-	struct dvb_usb_adapter *adap = &d->adapter[0];
++
++	dev_dbg(&d->udev->dev, "%s: adap=%d\n", __func__, adap->id);
+ 
+ 	dvb_module_release(state->i2c_client_tuner);
+ 	dvb_module_release(state->i2c_client_demod);
+ 	dvb_module_release(state->i2c_client_ci);
+ 
+-	adap->fe[0] = NULL;
++	return 0;
+ }
+ 
+ /* DVB USB Driver stuff */
+@@ -711,11 +713,11 @@ static struct dvb_usb_device_properties dvbsky_s960_props = {
+ 
+ 	.i2c_algo         = &dvbsky_i2c_algo,
+ 	.frontend_attach  = dvbsky_s960_attach,
++	.frontend_detach  = dvbsky_frontend_detach,
+ 	.init             = dvbsky_init,
+ 	.get_rc_config    = dvbsky_get_rc_config,
+ 	.streaming_ctrl   = dvbsky_streaming_ctrl,
+ 	.identify_state	  = dvbsky_identify_state,
+-	.exit             = dvbsky_exit,
+ 	.read_mac_address = dvbsky_read_mac_addr,
+ 
+ 	.num_adapters = 1,
+@@ -738,11 +740,11 @@ static struct dvb_usb_device_properties dvbsky_s960c_props = {
+ 
+ 	.i2c_algo         = &dvbsky_i2c_algo,
+ 	.frontend_attach  = dvbsky_s960c_attach,
++	.frontend_detach  = dvbsky_frontend_detach,
+ 	.init             = dvbsky_init,
+ 	.get_rc_config    = dvbsky_get_rc_config,
+ 	.streaming_ctrl   = dvbsky_streaming_ctrl,
+ 	.identify_state	  = dvbsky_identify_state,
+-	.exit             = dvbsky_exit,
+ 	.read_mac_address = dvbsky_read_mac_addr,
+ 
+ 	.num_adapters = 1,
+@@ -765,11 +767,11 @@ static struct dvb_usb_device_properties dvbsky_t680c_props = {
+ 
+ 	.i2c_algo         = &dvbsky_i2c_algo,
+ 	.frontend_attach  = dvbsky_t680c_attach,
++	.frontend_detach  = dvbsky_frontend_detach,
+ 	.init             = dvbsky_init,
+ 	.get_rc_config    = dvbsky_get_rc_config,
+ 	.streaming_ctrl   = dvbsky_streaming_ctrl,
+ 	.identify_state	  = dvbsky_identify_state,
+-	.exit             = dvbsky_exit,
+ 	.read_mac_address = dvbsky_read_mac_addr,
+ 
+ 	.num_adapters = 1,
+@@ -792,11 +794,11 @@ static struct dvb_usb_device_properties dvbsky_t330_props = {
+ 
+ 	.i2c_algo         = &dvbsky_i2c_algo,
+ 	.frontend_attach  = dvbsky_t330_attach,
++	.frontend_detach  = dvbsky_frontend_detach,
+ 	.init             = dvbsky_init,
+ 	.get_rc_config    = dvbsky_get_rc_config,
+ 	.streaming_ctrl   = dvbsky_streaming_ctrl,
+ 	.identify_state	  = dvbsky_identify_state,
+-	.exit             = dvbsky_exit,
+ 	.read_mac_address = dvbsky_read_mac_addr,
+ 
+ 	.num_adapters = 1,
+@@ -819,11 +821,11 @@ static struct dvb_usb_device_properties mygica_t230c_props = {
+ 
+ 	.i2c_algo         = &dvbsky_i2c_algo,
+ 	.frontend_attach  = dvbsky_mygica_t230c_attach,
++	.frontend_detach  = dvbsky_frontend_detach,
+ 	.init             = dvbsky_init,
+ 	.get_rc_config    = dvbsky_get_rc_config,
+ 	.streaming_ctrl   = dvbsky_streaming_ctrl,
+ 	.identify_state	  = dvbsky_identify_state,
+-	.exit             = dvbsky_exit,
+ 
+ 	.num_adapters = 1,
+ 	.adapter = {
+@@ -845,11 +847,11 @@ static struct dvb_usb_device_properties mygica_t230c_v2_props = {
+ 
+ 	.i2c_algo         = &dvbsky_i2c_algo,
+ 	.frontend_attach  = dvbsky_mygica_t230c_v2_attach,
++	.frontend_detach  = dvbsky_frontend_detach,
+ 	.init             = dvbsky_init,
+ 	.get_rc_config    = dvbsky_get_rc_config,
+ 	.streaming_ctrl   = dvbsky_streaming_ctrl,
+ 	.identify_state	  = dvbsky_identify_state,
+-	.exit		  = dvbsky_exit,
+ 
+ 	.num_adapters = 1,
+ 	.adapter = {
+@@ -871,11 +873,11 @@ static struct dvb_usb_device_properties mygica_t230_props = {
+ 
+ 	.i2c_algo         = &dvbsky_i2c_algo,
+ 	.frontend_attach  = dvbsky_mygica_t230_attach,
++	.frontend_detach  = dvbsky_frontend_detach,
+ 	.init             = dvbsky_init,
+ 	.get_rc_config    = dvbsky_get_rc_config,
+ 	.streaming_ctrl   = dvbsky_streaming_ctrl,
+ 	.identify_state	  = dvbsky_identify_state,
+-	.exit             = dvbsky_exit,
+ 
+ 	.num_adapters = 1,
+ 	.adapter = {
